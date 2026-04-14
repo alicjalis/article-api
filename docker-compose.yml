@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    container_name: article-api
+    expose:
+      - "8000"
+    volumes:
+      - ./articles.db:/app/articles.db
+
+  nginx:
+    image: nginx:alpine
+    container_name: article-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/certs:/etc/nginx/certs
+    depends_on:
+      - app
