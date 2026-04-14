@@ -42,3 +42,15 @@ def update_article(db: Session, article: Article, data: ArticleUpdate) -> Articl
 def delete_article(db: Session, article: Article) -> None:
     db.delete(article)
     db.commit()
+
+
+def bulk_create_articles(db: Session, articles_data: list[ArticleCreate], author_id: int) -> list[Article]:
+    articles = [
+        Article(title=a.title, content=a.content, author_id=author_id)
+        for a in articles_data
+    ]
+    db.add_all(articles)
+    db.commit()
+    for article in articles:
+        db.refresh(article)
+    return articles

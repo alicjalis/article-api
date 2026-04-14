@@ -5,11 +5,19 @@ from app.db.database import get_db
 from app.models.user import User
 from app.schemas.article import ArticleCreate, ArticleUpdate, ArticleOut
 from app.services.article_service import (
-    create_article, get_articles, get_article, update_article, delete_article
+    create_article, get_articles, get_article, update_article, delete_article, bulk_create_articles
 )
 from app.core.deps import get_current_user
 
 router = APIRouter(prefix="/articles", tags=["articles"])
+
+@router.post("/bulk", response_model=list[ArticleOut], status_code=status.HTTP_201_CREATED)
+def bulk_import(
+    articles_data: list[ArticleCreate],
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return bulk_create_articles(db, articles_data, author_id=current_user.id)
 
 
 @router.post("/", response_model=ArticleOut, status_code=status.HTTP_201_CREATED)
@@ -61,3 +69,5 @@ def delete(
     if article.author_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not your article")
     delete_article(db, article)
+
+
