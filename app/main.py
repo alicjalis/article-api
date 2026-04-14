@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from app.db.database import Base, engine
-from app.api import auth
+from app.api import auth, articles
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Article API")
 
 app.include_router(auth.router)
+app.include_router(articles.router)
