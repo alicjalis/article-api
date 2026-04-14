@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.article import Article
 from app.schemas.article import ArticleCreate, ArticleUpdate
+from app.services.notification_service import notify_subscribers
 
 
 def create_article(db: Session, data: ArticleCreate, author_id: int) -> Article:
@@ -12,6 +13,11 @@ def create_article(db: Session, data: ArticleCreate, author_id: int) -> Article:
     db.add(article)
     db.commit()
     db.refresh(article)
+    
+    from app.models.user import User
+    author = db.query(User).filter(User.id == author_id).first()
+    notify_subscribers(db, article.title, author.username)
+
     return article
 
 
