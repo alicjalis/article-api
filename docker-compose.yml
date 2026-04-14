@@ -4,6 +4,8 @@ services:
     container_name: article-api
     expose:
       - "8000"
+    env_file:
+      - .env
     volumes:
       - ./articles.db:/app/articles.db
 

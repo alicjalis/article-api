@@ -1,8 +1,13 @@
+import os
 from datetime import datetime, timedelta
+
+from dotenv import load_dotenv
 from jose import jwt
 import bcrypt
 
-SECRET_KEY = "change-me-in-production"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY", "change-me-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
