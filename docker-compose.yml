@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./articles.db:/app/articles.db
+      - db_data:/app/data
       - certs:/app/nginx/certs
 
   nginx:
@@ -24,3 +24,4 @@ services:
 
 volumes:
   certs:
+  db_data:
