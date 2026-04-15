@@ -3,9 +3,7 @@ from datetime import datetime
 notifications: list[dict] = []
 
 
-def notify_subscribers(db, article_title: str, author_username: str) -> None:
-    from app.models.user import User
-    subscribers = db.query(User).filter(User.is_subscribed == True).all()
+def notify_subscribers(subscribers: list, article_title: str, author_username: str) -> None:
     for user in subscribers:
         notifications.append({
             "user_id": user.id,

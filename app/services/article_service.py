@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
+
 from app.models.article import Article
+from app.models.user import User
 from app.schemas.article import ArticleCreate, ArticleUpdate
 from app.services.notification_service import notify_subscribers
 
@@ -13,13 +15,12 @@ def create_article(db: Session, data: ArticleCreate, author_id: int) -> Article:
     db.add(article)
     db.commit()
     db.refresh(article)
-    
-    from app.models.user import User
+
     author = db.query(User).filter(User.id == author_id).first()
-    notify_subscribers(db, article.title, author.username)
+    subscribers = db.query(User).filter(User.is_subscribed == True).all()
+    notify_subscribers(subscribers, article.title, author.username)
 
     return article
-
 
 def get_articles(db: Session, skip: int = 0, limit: int = 20) -> list[Article]:
     return db.query(Article).offset(skip).limit(limit).all()
@@ -53,4 +54,10 @@ def bulk_create_articles(db: Session, articles_data: list[ArticleCreate], author
     db.commit()
     for article in articles:
         db.refresh(article)
+
+    author = db.query(User).filter(User.id == author_id).first()
+    subscribers = db.query(User).filter(User.is_subscribed == True).all()
+    for article in articles:
+        notify_subscribers(subscribers, article.title, author.username)
+
     return articles
